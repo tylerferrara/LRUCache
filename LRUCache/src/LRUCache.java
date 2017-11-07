@@ -1,4 +1,5 @@
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * An implementation of <tt>Cache</tt> that uses a least-recently-used (LRU)
@@ -8,7 +9,7 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	
 	private int capacity;
 	private DataProvider<T, U> provider;
-	private HashMap<T, String> usage;
+	private LinkedList<T> recentlyUsed;
 	private int numMisses;
 	private HashMap<T, U> storage;
 	
@@ -20,7 +21,7 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	public LRUCache (DataProvider<T, U> provider, int capacity) {
 		this.provider = provider;
 		this.storage = new HashMap<T, U>(capacity);
-		this.usage = new HashMap<T, String>(capacity);
+		this.recentlyUsed = new LinkedList<T>();
 		this.capacity = capacity;
 		this.numMisses = 0;
 	}
@@ -51,16 +52,22 @@ public class LRUCache<T, U> implements Cache<T, U> {
 		}
 	}
 	
+	public int getCapacity() {
+		return this.capacity;
+	}
+	
 	private void addToStorage(T key, U data) {
 		if(storage.size() == this.capacity) {
-			// replace new data and key with oldest used one
-			
 			// find oldest data entry (hard to implement)
+			storage.remove(recentlyUsed.getFirst());
+			recentlyUsed.removeFirst();
 			// replace that data with new data
-			// record change in usage
+			storage.put(key, data);
+			// record newest change
+			recentlyUsed.add(key);
 		} else {
 			storage.put(key, data);
-			usage.put(key, "Some sort of time-stamp...");
+			recentlyUsed.add(key);
 		}
 	}
 
