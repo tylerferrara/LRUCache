@@ -32,19 +32,15 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	 * @return the value associated with the key
 	 */
 	public U get (T key) {
-		// do I already have key locally??
-		// yes: return
-		// no:  fetch from provider and add to local storage
 		
-		U attempt = storage.get(key);
-		if(attempt.equals(null)) {
+		if(storage.containsKey(key)) {
+			updateRecentlyUsed(key);
+			return storage.get(key);
+		} else {
 			this.numMisses += 1;
 			U data = provider.get(key);
 			addToStorage(key, data);
 			return data;
-		} else {
-			updateRecentlyUsed(key);
-			return attempt;
 		}
 	}
 	
@@ -72,17 +68,59 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	}
 	
 	private void updateRecentlyUsed(T key) {
-		LinkedList<T> recent = this.recentlyUsed;
-		if(key == recent.getLast()) {
-			this.recentlyUsed = recent;
-		} else if(recent.contains(key)) {
-			recent.remove(key);
-			recent.addLast(key);
+		if(this.recentlyUsed != null && this.recentlyUsed.size() > 0) {
+			if(key == this.recentlyUsed.getLast()) {
+				return;
+			} else if(this.recentlyUsed.contains(key)) {
+				this.recentlyUsed.remove(key);
+				this.recentlyUsed.addLast(key);
+			} else if(this.recentlyUsed.size() < this.capacity) {
+				this.recentlyUsed.addLast(key);
+			} else {
+				this.recentlyUsed.remove(key);
+				this.recentlyUsed.addLast(key);
+			}
 		} else {
-			recent.removeFirst();
-			recent.add(key);
-			this.recentlyUsed = recent;
+			this.recentlyUsed.addLast(key);
 		}
+	}
+	
+	public static void main(String args[]) {
+		HashMap<Integer, String> testProvider = new HashMap<Integer, String>();
+        testProvider.put(new Integer(1), "1");
+        testProvider.put(new Integer(2), "2");
+        testProvider.put(new Integer(3), "3");
+        testProvider.put(new Integer(4), "4");
+        testProvider.put(new Integer(5), "5");
+        testProvider.put(new Integer(6), "6");
+        testProvider.put(new Integer(7), "7");
+        testProvider.put(new Integer(8), "8");
+        testProvider.put(new Integer(9), "9");
+        testProvider.put(new Integer(10), "10");
+        testProvider.put(new Integer(11), "11");
+        testProvider.put(new Integer(12), "12");
+        testProvider.put(new Integer(13), "13");
+        testProvider.put(new Integer(14), "14");
+        Provider tp = new Provider(testProvider);
+        LRUCache test = new LRUCache(tp, 4);
+        
+        double start = System.currentTimeMillis();
+        test.get(1);
+        double end = System.currentTimeMillis();
+        System.out.println(end - start);
+        test.get(2);
+        test.get(3);
+        test.get(4);
+        start = System.currentTimeMillis();
+        test.get(1);
+        end = System.currentTimeMillis();
+        System.out.println(end - start);
+        System.out.println(test.recentlyUsed.getLast());
+        test.get(5);
+        System.out.println(test.storage.containsKey(1));
+        System.out.println(test.storage.containsKey(2));
+        System.out.println(test.getNumMisses());
+        System.out.println(test.getCapacity());
 	}
 
 }
