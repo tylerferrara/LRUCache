@@ -10,6 +10,7 @@ public class Provider<T, U> implements DataProvider<T, U> {
 	}
 	
 	public U get(T key) {
+		numMisses++;
 		return storage.get(key);
 	}
 	
