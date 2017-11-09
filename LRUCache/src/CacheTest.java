@@ -25,10 +25,13 @@ public class CacheTest {
 	public void testLRU()
 	{
 		HashMap<Integer,String> testStorage = new HashMap<Integer, String>(5);
-		DataProvider<Integer,String> provider = new Provider(testStorage); // Need to instantiate an actual DataProvider
+		Provider<Integer,String> provider = new Provider(testStorage); // Need to instantiate an actual DataProvider
 		Cache<Integer,String> cache = new LRUCache<Integer,String>(provider, 5);
-		
-		cache.get(1);
+		int misses = provider.getNumMisses();
+		System.out.println(misses);
+		assertEquals(provider.getNumMisses(), provider.getNumMisses()==0);
+		assertEquals(cache.get(1), provider.getNumMisses()==misses+1);
+		System.out.println(misses);
 		cache.get(2);
 		cache.get(3);
 		cache.get(4);
@@ -55,10 +58,10 @@ public class CacheTest {
 	@Test
 	public void testTime()
 	{
-		has
-		final long startTime = System.currentTimeMillis();
-		DataProvider<Integer,String> provider = new Provider(); // Need to instantiate an actual DataProvider
+		HashMap<Integer,String> testStorage = new HashMap<Integer, String>(5);
+		Provider<Integer,String> provider = new Provider(testStorage); // Need to instantiate an actual DataProvider
 		Cache<Integer,String> cache = new LRUCache<Integer,String>(provider, 5);
+		final long startTime = System.currentTimeMillis();
 		//Fill cache with stuff
 		
 		
