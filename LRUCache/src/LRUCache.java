@@ -31,6 +31,12 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	 * @param key the key
 	 * @return the value associated with the key
 	 */
+	/*Get method for LRUCache
+	 * Attempts to retrieve value from cache, if not found will look into storage
+	 * also updates recently used element
+	 * (non-Javadoc)
+	 * @see DataProvider#get(java.lang.Object)
+	 */
 	public U get (T key) {
 		
 		if(storage.containsKey(key)) {
@@ -44,10 +50,9 @@ public class LRUCache<T, U> implements Cache<T, U> {
 		}
 	}
 	
-	public int getCapacity() {
-		return this.capacity;
-	}
-	
+	/*Add data to cache
+	 * if element is already there, make it most recently used
+	 */
 	private void addToStorage(T key, U data) {
 		if(storage.size() == this.capacity) {
 			storage.remove(recentlyUsed.getFirst());
@@ -66,7 +71,9 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	public int getNumMisses () {
 		return this.numMisses;
 	}
-	
+	/*
+	 * Tracks what the most recently used element is 
+	 */
 	private void updateRecentlyUsed(T key) {
 		if(this.recentlyUsed != null && this.recentlyUsed.size() > 0) {
 			if(key == this.recentlyUsed.getLast()) {
@@ -85,42 +92,6 @@ public class LRUCache<T, U> implements Cache<T, U> {
 		}
 	}
 	
-	public static void main(String args[]) {
-		HashMap<Integer, String> testProvider = new HashMap<Integer, String>();
-        testProvider.put(new Integer(1), "1");
-        testProvider.put(new Integer(2), "2");
-        testProvider.put(new Integer(3), "3");
-        testProvider.put(new Integer(4), "4");
-        testProvider.put(new Integer(5), "5");
-        testProvider.put(new Integer(6), "6");
-        testProvider.put(new Integer(7), "7");
-        testProvider.put(new Integer(8), "8");
-        testProvider.put(new Integer(9), "9");
-        testProvider.put(new Integer(10), "10");
-        testProvider.put(new Integer(11), "11");
-        testProvider.put(new Integer(12), "12");
-        testProvider.put(new Integer(13), "13");
-        testProvider.put(new Integer(14), "14");
-        Provider tp = new Provider(testProvider);
-        LRUCache test = new LRUCache(tp, 4);
-        
-        double start = System.currentTimeMillis();
-        test.get(1);
-        double end = System.currentTimeMillis();
-        System.out.println(end - start);
-        test.get(2);
-        test.get(3);
-        test.get(4);
-        start = System.currentTimeMillis();
-        test.get(1);
-        end = System.currentTimeMillis();
-        System.out.println(end - start);
-        System.out.println(test.recentlyUsed.getLast());
-        test.get(5);
-        System.out.println(test.storage.containsKey(1));
-        System.out.println(test.storage.containsKey(2));
-        System.out.println(test.getNumMisses());
-        System.out.println(test.getCapacity());
-	}
+	
 
 }
