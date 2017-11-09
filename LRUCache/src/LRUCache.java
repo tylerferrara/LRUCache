@@ -38,16 +38,12 @@ public class LRUCache<T, U> implements Cache<T, U> {
 		
 		U attempt = storage.get(key);
 		if(attempt.equals(null)) {
-			//didn't find it
 			this.numMisses += 1;
-			// get from provider
 			U data = provider.get(key);
-			// add to local storage
 			addToStorage(key, data);
 			return data;
 		} else {
-			// got it!
-			// wow that was quick...
+			updateRecentlyUsed(key);
 			return attempt;
 		}
 	}
@@ -58,16 +54,12 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	
 	private void addToStorage(T key, U data) {
 		if(storage.size() == this.capacity) {
-			// find oldest data entry (hard to implement)
 			storage.remove(recentlyUsed.getFirst());
-			recentlyUsed.removeFirst();
-			// replace that data with new data
 			storage.put(key, data);
-			// record newest change
-			recentlyUsed.add(key);
+			updateRecentlyUsed(key);
 		} else {
 			storage.put(key, data);
-			recentlyUsed.add(key);
+			updateRecentlyUsed(key);
 		}
 	}
 
@@ -78,4 +70,19 @@ public class LRUCache<T, U> implements Cache<T, U> {
 	public int getNumMisses () {
 		return this.numMisses;
 	}
+	
+	private void updateRecentlyUsed(T key) {
+		LinkedList<T> recent = this.recentlyUsed;
+		if(key == recent.getLast()) {
+			this.recentlyUsed = recent;
+		} else if(recent.contains(key)) {
+			recent.remove(key);
+			recent.addLast(key);
+		} else {
+			recent.removeFirst();
+			recent.add(key);
+			this.recentlyUsed = recent;
+		}
+	}
+
 }
